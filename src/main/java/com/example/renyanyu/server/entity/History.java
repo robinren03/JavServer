@@ -68,6 +68,14 @@ public class History implements Serializable {
 		this.user = user;
 	}
 	
+	public void setCreateDate(Date createdate) {
+		this.createdate = createdate;
+	}
+	
+	public Date getCreateDate() {
+		return this.createdate;
+	}
+	
 	public History() {
 		super();
 	}

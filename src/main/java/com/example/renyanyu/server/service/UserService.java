@@ -4,4 +4,5 @@ import com.example.renyanyu.server.entity.User;
 
 public interface UserService {
 	User readByName(String name);
+	void updateUser(User user);
 }

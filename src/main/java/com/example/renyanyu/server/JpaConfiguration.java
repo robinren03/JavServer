@@ -20,4 +20,5 @@ public class JpaConfiguration {
     PersistenceExceptionTranslationPostProcessor persistenceExceptionTranslationPostProcessor(){
         return new PersistenceExceptionTranslationPostProcessor();
     }
+    
 }

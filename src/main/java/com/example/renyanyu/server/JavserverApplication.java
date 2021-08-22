@@ -11,7 +11,7 @@ public class JavserverApplication {
 	
 	@RequestMapping("/")
     public String hello(){
-        return "hello boot";
+        return "This is the server of JavEduHw";
     }
 	
 	public static void main(String[] args) {

@@ -32,6 +32,9 @@ public class User implements Serializable {
 	
 	private String password;
 	
+	@Column(length=50,nullable=true)
+	private String UUID;
+	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user" , fetch = FetchType.EAGER)	
 	private List<History> history = new ArrayList<History>();
 	
@@ -65,12 +68,18 @@ public class User implements Serializable {
 	public void setHistory(List<History> history){
 		this.history = history;
 	}
+	public String getUUID() {
+		return UUID;
+	}
+	public void setUUID(String UUID) {
+		this.UUID = UUID;
+	}
 	public User() {
 		super();
 	}
 	
 	public User(Long id, String name, String displayName, String password
-			, List<History> history)
+			, List<History> history, String UUID)
 	{
 		super();
 		this.id = id;
@@ -78,5 +87,6 @@ public class User implements Serializable {
 		this.displayName = displayName;
 		this.password = password;
 		this.history = history;
+		this.UUID = UUID;
 	} 
 }
