@@ -52,8 +52,8 @@ public class RequestController {
 		LinkedHashMap<String, String> request = new LinkedHashMap<String, String>();
 		request.put("course", course);
 		request.put("searchKey", searchKey);
-		request.put("id", id);
 		for(int i=0; i<=2; i++) {
+			request.put("id", id);
 			String temp = HttpRequest.sendGet("http://open.edukg.cn/opedukg/api/typeOpen/open/instanceList", request);
 			if(temp.equals("failed")) {
 				setupId();
@@ -79,8 +79,8 @@ public class RequestController {
 		LinkedHashMap<String, String> request1 = new LinkedHashMap<String, String>();
 		if(course != null) request1.put("course", course);
 		request1.put("name", name);
-		request1.put("id", id);
 		for(int i=0; i<=2; i++) {
+			request1.put("id", id);
 			String temp = HttpRequest.sendGet("http://open.edukg.cn/opedukg/api/typeOpen/open/infoByInstanceName", request1);
 			if(temp.equals("failed")) {
 				setupId();
@@ -91,6 +91,140 @@ public class RequestController {
 					if(token != null) {
 						addHistory(token, course, name);
 					}
+					return temp;
+				}
+				else setupId();
+			}
+		}
+		return "failed";
+	}
+	
+	@RequestMapping(value = "/question", method = RequestMethod.POST)
+	@ResponseBody
+	public String getQuestion(
+			@RequestParam(value = "course", required = true) String course,
+			@RequestParam(value = "inputQuestion", required = true) String inputQuestion
+			)
+	{
+		
+		String preReq = "course=" + course + "&inputQuestion=" + inputQuestion;
+		for(int i=0; i<=2; i++) {
+			String request = preReq + "&id=" + id;
+			String temp = HttpRequest.sendPost("http://open.edukg.cn/opedukg/api/typeOpen/open/inputQuestion", request);
+			if(temp.equals("failed")) {
+				setupId();
+			} else {
+				System.out.println(temp);
+				JSONObject jsonObject = JSONObject.parseObject(temp);
+				if(jsonObject.getString("code").equals("0")) {
+					return temp;
+				}
+				else setupId();
+			}
+		}
+		return "failed";
+	}
+	
+	@RequestMapping(value = "/link", method = RequestMethod.POST)
+	@ResponseBody
+	public String getLink(
+			@RequestParam(value = "course", required = false) String course,
+			@RequestParam(value = "context", required = true) String context
+			)
+	{
+		
+		String preReq = "context=" + context;
+		if(course != null) preReq += "&course=" + course;
+		for(int i=0; i<=2; i++) {
+			String request = preReq + "&id=" + id;
+			String temp = HttpRequest.sendPost("http://open.edukg.cn/opedukg/api/typeOpen/open/linkInstance", request);
+			if(temp.equals("failed")) {
+				setupId();
+			} else {
+				System.out.println(temp);
+				JSONObject jsonObject = JSONObject.parseObject(temp);
+				if(jsonObject.getString("code").equals("0")) {
+					return temp;
+				}
+				else setupId();
+			}
+		}
+		return "failed";
+	}
+	
+	@RequestMapping(value="/exercise", method = RequestMethod.GET)
+	@ResponseBody
+	public String getExercise(
+			HttpServletRequest request,
+			@RequestParam(value = "uriName", required =true) String uriName) {
+		String token = request.getHeader("Token");
+		LinkedHashMap<String, String> request1 = new LinkedHashMap<String, String>();
+		request1.put("uriName", uriName);
+		for(int i=0; i<=2; i++) {
+			request1.put("id", id);
+			String temp = HttpRequest.sendGet(
+					"http://open.edukg.cn/opedukg/api/typeOpen/open/questionListByUriName", request1);
+			if(temp.equals("failed")) {
+				setupId();
+			} else {
+				System.out.println(temp);
+				JSONObject jsonObject = JSONObject.parseObject(temp);
+				if(jsonObject.getString("code").equals("0")) {
+					if(token != null) {
+						//addHistory(token, course, name);
+					}
+					return temp;
+				}
+				else setupId();
+			}
+		}
+		return "failed";
+	}
+	
+	@RequestMapping(value = "/related", method = RequestMethod.POST)
+	@ResponseBody
+	public String getRelated(
+			@RequestParam(value = "course", required = true) String course,
+			@RequestParam(value = "subjectName", required = true) String subjectName
+			)
+	{
+		
+		String preReq =  "subjectName=" + subjectName + "&course=" + course;
+		for(int i=0; i<=2; i++) {
+			String request = preReq + "&id=" + id;
+			String temp = HttpRequest.sendPost("http://open.edukg.cn/opedukg/api/typeOpen/open/relatedsubject", request);
+			if(temp.equals("failed")) {
+				setupId();
+			} else {
+				System.out.println(temp);
+				JSONObject jsonObject = JSONObject.parseObject(temp);
+				if(jsonObject.getString("code").equals("0")) {
+					return temp;
+				}
+				else setupId();
+			}
+		}
+		return "failed";
+	}
+	
+	@RequestMapping(value = "/card", method = RequestMethod.POST)
+	@ResponseBody
+	public String getCard(
+			@RequestParam(value = "course", required = true) String course,
+			@RequestParam(value = "uri", required = true) String uri
+			)
+	{
+		
+		String preReq =  "uri=" + uri + "&course=" + course;
+		for(int i=0; i<=2; i++) {
+			String request = preReq + "&id=" + id;
+			String temp = HttpRequest.sendPost("http://open.edukg.cn/opedukg/api/typeOpen/open/getKnowledgeCard", request);
+			if(temp.equals("failed")) {
+				setupId();
+			} else {
+				System.out.println(temp);
+				JSONObject jsonObject = JSONObject.parseObject(temp);
+				if(jsonObject.getString("code").equals("0")) {
 					return temp;
 				}
 				else setupId();
