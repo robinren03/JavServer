@@ -2,7 +2,7 @@ package com.example.renyanyu.server.entity;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -33,10 +33,10 @@ public class User implements Serializable {
 	private String password;
 	
 	@Column(length=50,nullable=true)
-	private String UUID;
+	private String uuid;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user" , fetch = FetchType.EAGER)	
-	private List<History> history = new ArrayList<History>();
+	private List<History> history = new LinkedList<History>();
 	
 	public Long getId() {
 		return id;
@@ -69,17 +69,17 @@ public class User implements Serializable {
 		this.history = history;
 	}
 	public String getUUID() {
-		return UUID;
+		return uuid;
 	}
-	public void setUUID(String UUID) {
-		this.UUID = UUID;
+	public void setUUID(String uuid) {
+		this.uuid = uuid;
 	}
 	public User() {
 		super();
 	}
 	
 	public User(Long id, String name, String displayName, String password
-			, List<History> history, String UUID)
+			, List<History> history, String uuid)
 	{
 		super();
 		this.id = id;
@@ -87,6 +87,6 @@ public class User implements Serializable {
 		this.displayName = displayName;
 		this.password = password;
 		this.history = history;
-		this.UUID = UUID;
+		this.uuid = uuid;
 	} 
 }

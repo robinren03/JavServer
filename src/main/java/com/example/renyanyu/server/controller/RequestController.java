@@ -1,7 +1,9 @@
 package com.example.renyanyu.server.controller;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +21,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
+import com.example.renyanyu.server.dao.HistoryDao;
+import com.example.renyanyu.server.dao.UserDao;
+import com.example.renyanyu.server.entity.History;
 import com.example.renyanyu.server.entity.User;
 import com.example.renyanyu.server.service.UserService;
 import com.example.renyanyu.server.service.DataService;
@@ -26,6 +31,9 @@ import com.example.renyanyu.server.service.DataService;
 @RestController
 @RequestMapping("/request")
 public class RequestController {
+	@Autowired
+	private DataService dataService;
+	
 	private static String id = "";
 	
 	private static void setupId()
@@ -36,10 +44,6 @@ public class RequestController {
 			id = jsonObject.getString("id");
 			
 		}
-	}
-	
-	private static void addHistory(String token, String course, String name)
-	{
 	}
 	
 	@RequestMapping(value="/search", method = RequestMethod.GET)
@@ -89,7 +93,7 @@ public class RequestController {
 				JSONObject jsonObject = JSONObject.parseObject(temp);
 				if(jsonObject.getString("code").equals("0")) {
 					if(token != null) {
-						addHistory(token, course, name);
+						dataService.addHistory(token, course, name);
 					}
 					return temp;
 				}
@@ -171,7 +175,6 @@ public class RequestController {
 				JSONObject jsonObject = JSONObject.parseObject(temp);
 				if(jsonObject.getString("code").equals("0")) {
 					if(token != null) {
-						//addHistory(token, course, name);
 					}
 					return temp;
 				}
@@ -233,3 +236,47 @@ public class RequestController {
 		return "failed";
 	}
 }
+
+/*
+class HistoryChange implements Runnable {
+	@Autowired
+	private UserDao userDao;
+	
+	@Autowired
+	private HistoryDao historyDao;
+	
+	private Thread t;
+	private String name, course ,token;
+	HistoryChange(String token, String course, String name){
+		this.token = token;
+		this.course = course;
+		this.name = name;
+	}
+	
+	public void run() {
+		System.out.println(token);
+		User user = userDao.readByUuid(token);
+		if(user == null) {
+			System.out.println("USER IS NULL");
+			return;
+		}
+		History history = new History();
+		history.setId(0L);
+		history.setCourse(course);
+		history.setName(name);
+		history.setUser(user);
+		history.setCreateDate(new Date());
+		historyDao.save(history);
+		List<History> hl = user.getHistory();
+		hl.add(history);
+		user.setHistory(hl);
+		userDao.save(user);
+	}
+	
+	public void start() {
+		if (t == null) {
+	         t = new Thread (this);
+	         t.start ();
+	      }
+	}
+}*/
