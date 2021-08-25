@@ -1,19 +1,11 @@
 package com.example.renyanyu.server.controller;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,11 +13,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
-import com.example.renyanyu.server.dao.HistoryDao;
-import com.example.renyanyu.server.dao.UserDao;
-import com.example.renyanyu.server.entity.History;
-import com.example.renyanyu.server.entity.User;
-import com.example.renyanyu.server.service.UserService;
 import com.example.renyanyu.server.service.DataService;
 
 @RestController
@@ -51,7 +38,6 @@ public class RequestController {
 	public String searchByCourse(
 			@RequestParam(value = "course", required = true) String course,
 			@RequestParam(value = "searchKey", required = true) String searchKey) {
-		Map<String, Object> result = new HashMap<String, Object>();
 		
 		LinkedHashMap<String, String> request = new LinkedHashMap<String, String>();
 		request.put("course", course);
@@ -93,7 +79,11 @@ public class RequestController {
 				JSONObject jsonObject = JSONObject.parseObject(temp);
 				if(jsonObject.getString("code").equals("0")) {
 					if(token != null) {
-						dataService.addHistory(token, course, name);
+						int ret = dataService.addHistory(token, course, name);
+						if(ret != 0) {
+							jsonObject.put("user-online", false);
+						}else
+							jsonObject.put("user-online", true);
 					}
 					return temp;
 				}
@@ -233,6 +223,20 @@ public class RequestController {
 				else setupId();
 			}
 		}
+		return "failed";
+	}
+	
+	@RequestMapping(value = "/star", method = RequestMethod.GET)
+	@ResponseBody
+	public String makeStarred(
+			HttpServletRequest request,
+			@RequestParam(value = "course", required = true) String course,
+			@RequestParam(value = "name", required = true) String name
+			)
+	{
+		String token = request.getHeader("Token");
+		int ret = dataService.addStar(token, course, name);
+		if (ret == 0) return "success";
 		return "failed";
 	}
 }

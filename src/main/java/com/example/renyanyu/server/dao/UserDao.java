@@ -12,10 +12,10 @@ import com.example.renyanyu.server.entity.User;
 public interface UserDao extends JpaRepository<User, Long> {
 	User readByName(String name);
 	User readByUuid(String uuid);
-	
 	/*
-	@Query("UPDATE boot_user SET displayName = :displayName WHERE uuid = :uuid")
-	public int updateDisplayName(@Param("displayName") String displayName, @Param("uuid") String uuid);
+	@Modifying
+	@Query("UPDATE boot_user u SET u.displayName = :displayName WHERE u.uuid = :uuid")
+	public void updateDisplayName(@Param("displayName") String displayName, @Param("uuid") String uuid);
 	*/
 	
 }

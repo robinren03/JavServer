@@ -12,7 +12,7 @@
 	<artifactId>javserver</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>javserver</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Java Backend Server for JavEduHw</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
@@ -75,7 +75,7 @@
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-devtools</artifactId>
-        <optional>true</optional><!-- optional=true,依赖不会传递，该项目依赖devtools；之后依赖myboot项目的项目如果想要使用devtools，需要重新引入 -->
+        <optional>true</optional>
     </dependency>  
         
 	</dependencies>

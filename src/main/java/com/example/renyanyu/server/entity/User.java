@@ -1,8 +1,10 @@
 package com.example.renyanyu.server.entity;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,11 +16,11 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.example.renyanyu.server.entity.History;
+
 
 @Entity
 @Table(name="boot_user")
-public class User implements Serializable {
+public class User implements Serializable, Comparable<User> {
 	private static final long serialVersionUID = -6550777752269466791L;
 	
 	@Id
@@ -37,6 +39,9 @@ public class User implements Serializable {
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user" , fetch = FetchType.EAGER)	
 	private List<History> history = new LinkedList<History>();
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user" , fetch = FetchType.EAGER)	
+	private Set<Starred> star = new TreeSet<Starred>();
 	
 	public Long getId() {
 		return id;
@@ -68,6 +73,12 @@ public class User implements Serializable {
 	public void setHistory(List<History> history){
 		this.history = history;
 	}
+	public Set<Starred> getStar(){
+		return star;
+	}
+	public void setStar(Set<Starred> star){
+		this.star= star;	
+	}
 	public String getUUID() {
 		return uuid;
 	}
@@ -79,7 +90,7 @@ public class User implements Serializable {
 	}
 	
 	public User(Long id, String name, String displayName, String password
-			, List<History> history, String uuid)
+			,String uuid, List<History> history, Set<Starred> star)
 	{
 		super();
 		this.id = id;
@@ -88,5 +99,20 @@ public class User implements Serializable {
 		this.password = password;
 		this.history = history;
 		this.uuid = uuid;
+		this.star = star;
 	} 
+	
+	@Override
+	public int compareTo(User o) {
+		return -(this.id.compareTo(o.id));
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == this) return true;
+		if(obj == null) return false;
+		if(obj.getClass() != this.getClass()) return false;
+		User o = (User) obj;
+		return o.id.equals(this.id);
+	}
 }

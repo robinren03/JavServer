@@ -1,7 +1,6 @@
 package com.example.renyanyu.server.entity;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,10 +17,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name="boot_history")
-public class History implements Serializable, Comparable<History> {
+@Table(name="boot_starred")
+public class Starred implements Serializable, Comparable<Starred> {
 	
-	private static final long serialVersionUID = 8719878517384639149L;
+	private static final long serialVersionUID = 8293278516384639149L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,9 +35,6 @@ public class History implements Serializable, Comparable<History> {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	protected User user;
-	
-	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	private Date createdate;
 	
 	public Long getId() {
 		return id;
@@ -72,19 +68,11 @@ public class History implements Serializable, Comparable<History> {
 		this.user = user;
 	}
 	
-	public void setCreateDate(Date createdate) {
-		this.createdate = createdate;
-	}
-	
-	public Date getCreateDate() {
-		return this.createdate;
-	}
-	
-	public History() {
+	public Starred() {
 		super();
 	}
 	
-	public History(Long id, String course, String name, User user) {
+	public Starred(Long id, String course, String name, User user) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -97,7 +85,7 @@ public class History implements Serializable, Comparable<History> {
 		if(obj == this) return true;
 		if(obj == null) return false;
 		if(obj.getClass() != this.getClass()) return false;
-		History that = (History) obj;
+		Starred that = (Starred) obj;
 		if(!that.name.equals(this.name)) return false;
 		if(!that.course.equals(this.course)) return false;
 		if(!that.user.equals(this.user)) return false;
@@ -105,8 +93,8 @@ public class History implements Serializable, Comparable<History> {
 	}
 	
 	@Override
-	public int compareTo(History o) {
-		return -(this.createdate.compareTo(o.createdate));
+	public int compareTo(Starred o) {
+		return this.id.compareTo(o.id);
 	}
 	
 	@Override 

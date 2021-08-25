@@ -1,21 +1,21 @@
 package com.example.renyanyu.server.controller;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.renyanyu.server.entity.History;
 import com.example.renyanyu.server.entity.User;
 import com.example.renyanyu.server.service.UserService;
 import com.example.renyanyu.server.service.DataService;
@@ -61,8 +61,10 @@ public class UserController {
 		result.put("error", 0);
 		result.put("name", user.getName());
 		result.put("displayName", user.getDisplayName());
+		
 		result.put("history", user.getHistory());
 		result.put("Token", user.getUUID());
+		result.put("star", user.getStar());
 		return result;
 	}
 	
@@ -84,5 +86,5 @@ public class UserController {
 		userService.updateUser(user);
 		return "success";
 	}
-	
+		
 }
