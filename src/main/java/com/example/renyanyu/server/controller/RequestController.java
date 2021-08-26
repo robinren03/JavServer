@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.renyanyu.server.service.DataService;
 
@@ -23,6 +24,11 @@ public class RequestController {
 	
 	private static String id = "";
 	
+	private static final String[] subjects = new String[] {
+			"chinese", "english", "math", "physics", "chemistry",
+			"biology", "history", "geo", "politics"
+	};
+	
 	private static void setupId()
 	{
 		String json = HttpRequest.sendPost("http://open.edukg.cn/opedukg/api/typeAuth/user/login", "phone=13321135493&password=password1");
@@ -33,30 +39,50 @@ public class RequestController {
 		}
 	}
 	
-	@RequestMapping(value="/search", method = RequestMethod.GET)
-	@ResponseBody
-	public String searchByCourse(
-			@RequestParam(value = "course", required = true) String course,
-			@RequestParam(value = "searchKey", required = true) String searchKey) {
-		
+	private String searchByCourse(String course, String searchKey) {
 		LinkedHashMap<String, String> request = new LinkedHashMap<String, String>();
-		request.put("course", course);
 		request.put("searchKey", searchKey);
+		request.put("course", course);
 		for(int i=0; i<=2; i++) {
-			request.put("id", id);
-			String temp = HttpRequest.sendGet("http://open.edukg.cn/opedukg/api/typeOpen/open/instanceList", request);
-			if(temp.equals("failed")) {
+		  request.put("id", id);
+		  String temp = HttpRequest.sendGet("http://open.edukg.cn/opedukg/api/typeOpen/open/instanceList", request);
+		  if(temp.equals("failed")) {
 				setupId();
-			} else {
-				JSONObject jsonObject = JSONObject.parseObject(temp);
-				if(jsonObject.getString("code").equals("0")) {
-					System.out.println(temp);
-					return temp;
-				}
-				else setupId();
+		  } else {
+			JSONObject jsonObject = JSONObject.parseObject(temp);
+			if(jsonObject.getString("code").equals("0")) {
+				return temp;
 			}
+			else setupId();
+		  }
 		}
 		return "failed";
+	}
+	@RequestMapping(value="/search", method = RequestMethod.GET)
+	@ResponseBody
+	public String getSearch(
+			@RequestParam(value = "course", required = false) String course,
+			@RequestParam(value = "searchKey", required = true) String searchKey) {
+		
+		if(course == null) {
+			JSONArray list = new JSONArray();
+			for(int i=0; i<9; i++)
+			{
+				String gotResult = searchByCourse(subjects[i], searchKey);
+				if (!gotResult.equals("failed")) {
+					JSONObject jsonObject = JSONObject.parseObject(gotResult);
+					list.addAll(jsonObject.getJSONArray("data"));
+				}
+			}
+			JSONObject result = new JSONObject();
+			result.put("code", "0");
+			result.put("msg", "成功");
+			result.put("data", list);
+			return result.toString();
+				
+		}else {
+			return searchByCourse(course, searchKey);
+		}
 	}
 	
 	@RequestMapping(value="/instance", method = RequestMethod.GET)
