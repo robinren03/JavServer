@@ -15,8 +15,8 @@ import javax.persistence.JoinColumn;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name="boot_starred")
-public class Starred implements Serializable, Comparable<Starred> {
+@Table(name="boot_exercise")
+public class Exercise implements Serializable, Comparable<Exercise> {
 	
 	private static final long serialVersionUID = 8293278516384639149L;
 	
@@ -25,9 +25,15 @@ public class Starred implements Serializable, Comparable<Starred> {
 	private Long id;
 	
 	@Column(length=50, nullable=false)
-	private String course;
+	private String uriname;
 	
-	private String name;
+	private String qBody;
+	
+	private String qAnswer;
+	
+	private boolean isWrong;
+	
+	private int qId;
 	
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -42,39 +48,68 @@ public class Starred implements Serializable, Comparable<Starred> {
 		this.id = id;
 	}
 	
-	public String getCourse() {
-		return course;
+	public String getUriname() {
+		return uriname;
 	}
 	
-	public void setCourse(String course) {
-		this.course = course;
+	public void setUriname(String uriname) {
+		this.uriname = uriname;
 	}
 	
-	public String getName() {
-		return name;
+	public String getQAnswer() {
+		return qAnswer;
 	}
 	
-	public void setName(String name) {
-		this.name = name;
+	public void setQAnswer(String qAnswer) {
+		this.qAnswer = qAnswer;
+	}
+	
+	public String getQBody() {
+		return qBody;
+	}
+	
+	public void setQBody(String qBody) {
+		this.qBody = qBody;
+	}
+	
+	public int getQId() {
+		return qId;
+	}
+	
+	public void setQId(int qId) {
+		this.qId = qId; 	
 	}
 	
 	public User getUser() {
 		return user;
 	}
 	
+	public void setIsWrong(boolean isWrong) {
+		this.isWrong = isWrong;
+	}
+	
+	public boolean getIsWrong() {
+		return isWrong;
+	}
+	
 	public void setUser(User user) {
 		this.user = user;
 	}
 	
-	public Starred() {
+	public Exercise() {
 		super();
 	}
 	
-	public Starred(Long id, String course, String name, User user) {
+	public Exercise(Long id, String uriname, String qAnswer, int qId, 
+			String qBody, User user, boolean isWrong) {
 		super();
 		this.id = id;
-		this.name = name;
+		this.uriname = uriname;
+		this.qAnswer = qAnswer;
+		this.qId = qId;
+		this.qBody = qBody;
 		this.user = user;
+		this.isWrong = isWrong;
 	}
 	
 	@Override
@@ -83,20 +118,19 @@ public class Starred implements Serializable, Comparable<Starred> {
 		if(obj == this) return true;
 		if(obj == null) return false;
 		if(obj.getClass() != this.getClass()) return false;
-		Starred that = (Starred) obj;
-		if(!that.name.equals(this.name)) return false;
-		if(!that.course.equals(this.course)) return false;
+		Exercise that = (Exercise) obj;
+		if(that.qId != this.qId) return false;
 		if(!that.user.equals(this.user)) return false;
 		return true;
 	}
 	
 	@Override
-	public int compareTo(Starred o) {
+	public int compareTo(Exercise o) {
 		return this.id.compareTo(o.id);
 	}
 	
 	@Override 
 	public int hashCode() {
-		return (this.course + this.name + this.user.getId()).hashCode();
+		return (this.qId + "," + this.user.getId().toString()).hashCode();
 	}
 }

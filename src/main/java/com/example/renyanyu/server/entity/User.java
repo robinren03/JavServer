@@ -43,6 +43,9 @@ public class User implements Serializable, Comparable<User> {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user" , fetch = FetchType.EAGER)	
 	private Set<Starred> star = new TreeSet<Starred>();
 	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user" , fetch = FetchType.LAZY)	
+	private List<Exercise> exercise = new LinkedList<Exercise>();
+	
 	public Long getId() {
 		return id;
 	}
@@ -73,6 +76,12 @@ public class User implements Serializable, Comparable<User> {
 	public void setHistory(List<History> history){
 		this.history = history;
 	}
+	public List<Exercise> getExercise(){
+		return exercise;
+	}
+	public void setExercise(List<Exercise> exercise){
+		this.exercise = exercise;
+	}
 	public Set<Starred> getStar(){
 		return star;
 	}
@@ -90,7 +99,7 @@ public class User implements Serializable, Comparable<User> {
 	}
 	
 	public User(Long id, String name, String displayName, String password
-			,String uuid, List<History> history, Set<Starred> star)
+			,String uuid, List<History> history, Set<Starred> star, List<Exercise> exercise)
 	{
 		super();
 		this.id = id;
@@ -98,6 +107,7 @@ public class User implements Serializable, Comparable<User> {
 		this.displayName = displayName;
 		this.password = password;
 		this.history = history;
+		this.exercise = exercise;
 		this.uuid = uuid;
 		this.star = star;
 	} 
