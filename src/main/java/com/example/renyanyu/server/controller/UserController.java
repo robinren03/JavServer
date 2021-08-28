@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.renyanyu.server.entity.History;
 import com.example.renyanyu.server.entity.User;
+import com.example.renyanyu.server.entity.Exercise;
 import com.example.renyanyu.server.service.UserService;
 import com.example.renyanyu.server.service.DataService;
 
@@ -86,5 +90,25 @@ public class UserController {
 		userService.updateUser(user);
 		return "success";
 	}
+	
+	@RequestMapping(value = "/exercise", method = RequestMethod.GET)
+	@ResponseBody
+	public List<Exercise> getExercise(HttpServletRequest request,
+			@RequestParam(value = "page", required = true) int page){
+		String token = request.getHeader("Token");
+		if(token == null) return null;
+		Page<Exercise> el = userService.getExercise(token, page);
+		return el.getContent();
 		
+	}
+	
+	@RequestMapping(value = "/wrongex", method = RequestMethod.GET)
+	@ResponseBody
+	public List<Exercise> getWrongExercise(HttpServletRequest request,
+			@RequestParam(value = "page", required = true) int page){
+		String token = request.getHeader("Token");
+		if(token == null) return null;
+		Page<Exercise> el = userService.getWrongExercise(token, page);
+		return el.getContent();
+	}
 }

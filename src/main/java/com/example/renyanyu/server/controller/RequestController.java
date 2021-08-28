@@ -265,48 +265,22 @@ public class RequestController {
 		if (ret == 0) return "success";
 		return "failed";
 	}
+	
+	@RequestMapping(value="/donexercise", method = RequestMethod.POST)
+	@ResponseBody
+	public String addExercise(
+			HttpServletRequest request,
+			@RequestParam(value = "uriname", required = true) String uriname,
+			@RequestParam(value = "qBody", required = true) String qBody,
+			@RequestParam(value = "qAnswer", required = true) String qAnswer,
+			@RequestParam(value = "isWrong", required = true) boolean isWrong,
+			@RequestParam(value = "qId", required = true) int qId
+			)
+	{
+		String token = request.getHeader("Token");
+		if(token == null) return "failed";
+		int ret = dataService.addExercise(token, uriname, qBody, qAnswer, isWrong, qId);
+		if (ret == 0) return "success";
+		return "failed";
+	}
 }
-
-/*
-class HistoryChange implements Runnable {
-	@Autowired
-	private UserDao userDao;
-	
-	@Autowired
-	private HistoryDao historyDao;
-	
-	private Thread t;
-	private String name, course ,token;
-	HistoryChange(String token, String course, String name){
-		this.token = token;
-		this.course = course;
-		this.name = name;
-	}
-	
-	public void run() {
-		System.out.println(token);
-		User user = userDao.readByUuid(token);
-		if(user == null) {
-			System.out.println("USER IS NULL");
-			return;
-		}
-		History history = new History();
-		history.setId(0L);
-		history.setCourse(course);
-		history.setName(name);
-		history.setUser(user);
-		history.setCreateDate(new Date());
-		historyDao.save(history);
-		List<History> hl = user.getHistory();
-		hl.add(history);
-		user.setHistory(hl);
-		userDao.save(user);
-	}
-	
-	public void start() {
-		if (t == null) {
-	         t = new Thread (this);
-	         t.start ();
-	      }
-	}
-}*/

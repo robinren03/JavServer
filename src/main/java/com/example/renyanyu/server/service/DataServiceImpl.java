@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 import com.example.renyanyu.server.dao.UserDao;
 import com.example.renyanyu.server.dao.HistoryDao;
 import com.example.renyanyu.server.dao.StarredDao;
+import com.example.renyanyu.server.dao.ExerciseDao;
 import com.example.renyanyu.server.entity.User;
 import com.example.renyanyu.server.entity.History;
 import com.example.renyanyu.server.entity.Starred;
+import com.example.renyanyu.server.entity.Exercise;
 
 @Service
 public class DataServiceImpl implements DataService {
@@ -26,6 +28,9 @@ public class DataServiceImpl implements DataService {
 	
 	@Autowired
 	private StarredDao starredDao;
+	
+	@Autowired
+	private ExerciseDao exerciseDao;
 	
 	public void initData() {
 		userDao.deleteAll();
@@ -89,7 +94,6 @@ public class DataServiceImpl implements DataService {
 			for(Starred x : hl)
 				if(x.getName().equals(name) && x.getCourse().equals(course)) {
 					id = x.getId();
-					System.out.println(starredDao.findAll());
 					break;
 				}
 			hl.remove(star);
@@ -99,4 +103,33 @@ public class DataServiceImpl implements DataService {
 		}
 		return 0;
 	}
+
+	@Override
+	public int addExercise(String token, String uriname, 
+			String qBody, String qAnswer, boolean isWrong, int qId) {
+		User user = userDao.readByUuid(token);
+		if(user == null) return -1;
+		Exercise exercise = new Exercise();
+		exercise.setId(0L);
+		exercise.setIsWrong(isWrong);
+		exercise.setQAnswer(qAnswer);
+		exercise.setQBody(qBody);
+		exercise.setQId(qId);
+		exercise.setUriname(uriname);
+		exercise.setUser(user);
+		List<Exercise> hl = user.getExercise();
+		Long id = -1L;
+		for(Exercise x:hl)
+			if(x.equals(exercise)) {
+				id = x.getId();
+				hl.remove(x);
+				break;
+			}
+		hl.add(exercise);
+		user.setExercise(hl);
+		userDao.save(user);
+		if(id>=0) exerciseDao.deleteById(id);
+		return 0;
+	}
+	
 }
