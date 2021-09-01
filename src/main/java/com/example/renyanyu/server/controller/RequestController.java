@@ -101,7 +101,6 @@ public class RequestController {
 			if(temp.equals("failed")) {
 				setupId();
 			} else {
-				System.out.println(temp);
 				JSONObject jsonObject = JSONObject.parseObject(temp);
 				if(jsonObject.getString("code").equals("0")) {
 					if(token != null) {
@@ -229,11 +228,12 @@ public class RequestController {
 	@RequestMapping(value = "/card", method = RequestMethod.POST)
 	@ResponseBody
 	public String getCard(
+			HttpServletRequest req,
 			@RequestParam(value = "course", required = true) String course,
 			@RequestParam(value = "uri", required = true) String uri
 			)
 	{
-		
+		String token = req.getHeader("Token");
 		String preReq =  "uri=" + uri + "&course=" + course;
 		for(int i=0; i<=2; i++) {
 			String request = preReq + "&id=" + id;
@@ -241,10 +241,17 @@ public class RequestController {
 			if(temp.equals("failed")) {
 				setupId();
 			} else {
-				System.out.println(temp);
 				JSONObject jsonObject = JSONObject.parseObject(temp);
-				if(jsonObject.getString("code").equals("0")) {
-					return temp;
+				if(jsonObject.getString("code").equals("0")) 
+				{
+					if(token != null) {
+						int ret = dataService.addHistory(token, course, uri);
+						if(ret != 0) {
+							jsonObject.put("user-online", false);
+						}else
+							jsonObject.put("user-online", true);
+					}
+					return temp.toString();
 				}
 				else setupId();
 			}
