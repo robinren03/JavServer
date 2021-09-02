@@ -58,6 +58,7 @@ public class RequestController {
 		}
 		return "failed";
 	}
+	
 	@RequestMapping(value="/search", method = RequestMethod.GET)
 	@ResponseBody
 	public String getSearch(
@@ -290,4 +291,5 @@ public class RequestController {
 		if (ret == 0) return "success";
 		return "failed";
 	}
+	
 }
