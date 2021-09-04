@@ -1,11 +1,18 @@
 package com.example.renyanyu.server.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,6 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.renyanyu.server.service.DataService;
+
+import joinery.DataFrame;
+import joinery.DataFrame.Predicate;
 
 @RestController
 @RequestMapping("/request")
@@ -58,6 +68,7 @@ public class RequestController {
 		}
 		return "failed";
 	}
+	
 	@RequestMapping(value="/search", method = RequestMethod.GET)
 	@ResponseBody
 	public String getSearch(
@@ -233,7 +244,10 @@ public class RequestController {
 			@RequestParam(value = "uri", required = true) String uri
 			)
 	{
-		String token = req.getHeader("Token");
+		String token = null;
+		if(req != null) {
+			token = req.getHeader("Token");
+		}
 		String preReq =  "uri=" + uri + "&course=" + course;
 		for(int i=0; i<=2; i++) {
 			String request = preReq + "&id=" + id;
@@ -289,5 +303,39 @@ public class RequestController {
 		int ret = dataService.addExercise(token, uriname, qBody, qAnswer, isWrong, qId);
 		if (ret == 0) return "success";
 		return "failed";
+	}
+	
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
+	@ResponseBody
+	public List<Object> getList(
+			@RequestParam(value = "course", required = true) String course,
+			@RequestParam(value = "page", required = true)int page)
+	{
+		Resource resource = new ClassPathResource("./"+ course + ".csv");
+		try {
+			InputStream is = resource.getInputStream();
+			DataFrame<Object> dt = DataFrame.readCsv(is);
+			List<Object> ls = dt.select(new Predicate<Object>() {
+				@Override
+				public Boolean apply(List<Object> values) {
+					return String.class.cast(values.get(1)).equals("http://www.w3.org/2000/01/rdf-schema#label");
+				}
+			}).slice(page*15, page*15 + 14).col(0);
+			List<Object> req = new ArrayList<Object>();
+			for(Object uri:ls)
+			{
+				String temp = getCard(null, course, uri.toString());
+				if(!temp.equals("failed")) {
+					JSONObject jsonObject = JSONObject.parseObject(temp);
+					Map<String, Object> map = (Map<String, Object>)jsonObject.getJSONObject("data");
+					map.put("entity_url", uri.toString());
+					req.add(map);
+				}
+			}
+			return req;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}	
 	}
 }

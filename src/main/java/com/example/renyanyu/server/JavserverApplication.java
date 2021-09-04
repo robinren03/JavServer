@@ -11,7 +11,7 @@ public class JavserverApplication {
 	
 	@RequestMapping("/")
     public String hello(){
-        return "This is the server of JavEduHw";
+        return "This is server of JavEduHw";
     }
 	
 	public static void main(String[] args) {
