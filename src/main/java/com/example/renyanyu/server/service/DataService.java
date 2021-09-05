@@ -6,4 +6,5 @@ public interface DataService {
 	public int addStar(String token, String course, String name);
 	public int addExercise(String token, String uriname, String qBody, 
 			String qAnswer, boolean isWrong,int qId);
+
 }

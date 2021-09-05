@@ -7,7 +7,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/javeduser?characterEncoding=UTF-8
     username: renyanyu
-    password: Hk7Ne&1;5j
+    password: MySQL1234
     driver-class-name: com.mysql.jdbc.Driver
     continue-on-error: false
 

@@ -1,7 +1,9 @@
 package com.example.renyanyu.server.service;
 
 import java.util.List;
+import java.util.Set;
 
+import com.example.renyanyu.server.entity.Starred;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -49,5 +51,11 @@ public class UserServiceImpl implements UserService {
 		Pageable pageable = PageRequest.of(page, size, Direction.DESC, "id");
 		return exerciseDao.findByUserAndIsWrong(user, true, pageable);
 	}
-	
+
+	@Override
+	public Set<Starred> getCollection(String token) {
+		User user = userDao.readByUuid(token);
+		return user.getStar();
+	}
+
 }
