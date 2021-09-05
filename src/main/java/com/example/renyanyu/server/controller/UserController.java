@@ -8,6 +8,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.example.renyanyu.server.dao.UserDao;
+import com.example.renyanyu.server.entity.Starred;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,4 +113,16 @@ public class UserController {
 		Page<Exercise> el = userService.getWrongExercise(token, page);
 		return el.getContent();
 	}
+
+	@RequestMapping(value = "/collection", method = RequestMethod.GET)
+	@ResponseBody
+	public Set<Starred> getCollection(
+			HttpServletRequest request,
+			@RequestParam(value = "token", required = true) String token
+	)
+	{
+		if(token == null) return null;
+		return userService.getCollection(token);
+	}
+
 }

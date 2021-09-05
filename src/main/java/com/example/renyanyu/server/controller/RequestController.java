@@ -10,6 +10,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 
+import com.example.renyanyu.server.dao.UserDao;
+import com.example.renyanyu.server.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -286,6 +288,9 @@ public class RequestController {
 		if (ret == 0) return "success";
 		return "failed";
 	}
+
+
+
 	
 	@RequestMapping(value="/donexercise", method = RequestMethod.POST)
 	@ResponseBody
