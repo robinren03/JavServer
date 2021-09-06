@@ -23,11 +23,12 @@ public class Starred implements Serializable, Comparable<Starred> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	private String uri;
+	private String type;
 	
 	@Column(length=50, nullable=false)
-	private String course;
-	
 	private String name;
+
 	
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -42,12 +43,12 @@ public class Starred implements Serializable, Comparable<Starred> {
 		this.id = id;
 	}
 	
-	public String getCourse() {
-		return course;
+	public String getType() {
+		return type;
 	}
 	
-	public void setCourse(String course) {
-		this.course = course;
+	public void setType(String type) {
+		this.type = type;
 	}
 	
 	public String getName() {
@@ -56,6 +57,14 @@ public class Starred implements Serializable, Comparable<Starred> {
 	
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getUri() {
+		return uri;
+	}
+
+	public void setUri(String uri) {
+		this.uri = uri;
 	}
 	
 	public User getUser() {
@@ -85,7 +94,8 @@ public class Starred implements Serializable, Comparable<Starred> {
 		if(obj.getClass() != this.getClass()) return false;
 		Starred that = (Starred) obj;
 		if(!that.name.equals(this.name)) return false;
-		if(!that.course.equals(this.course)) return false;
+		if(!that.type.equals(this.type)) return false;
+		if(!that.uri.equals(this.uri)) return false;
 		if(!that.user.equals(this.user)) return false;
 		return true;
 	}
@@ -97,6 +107,6 @@ public class Starred implements Serializable, Comparable<Starred> {
 	
 	@Override 
 	public int hashCode() {
-		return (this.course + this.name + this.user.getId()).hashCode();
+		return (this.name + this.type + this.uri + this.user.getId()).hashCode();
 	}
 }

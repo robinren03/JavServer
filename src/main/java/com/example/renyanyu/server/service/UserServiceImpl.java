@@ -3,6 +3,7 @@ package com.example.renyanyu.server.service;
 import java.util.List;
 import java.util.Set;
 
+import com.example.renyanyu.server.entity.History;
 import com.example.renyanyu.server.entity.Starred;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -56,6 +57,12 @@ public class UserServiceImpl implements UserService {
 	public Set<Starred> getCollection(String token) {
 		User user = userDao.readByUuid(token);
 		return user.getStar();
+	}
+
+	@Override
+	public List<History> getHistory(String token) {
+		User user = userDao.readByUuid(token);
+		return user.getHistory();
 	}
 
 }

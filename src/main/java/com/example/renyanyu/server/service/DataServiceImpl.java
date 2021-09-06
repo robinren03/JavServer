@@ -45,35 +45,35 @@ public class DataServiceImpl implements DataService {
 		userDao.save(user);
 	}
 
-	public int addHistory(String token, String course, String name)
-	{
-		User user = userDao.readByUuid(token);
-		
-		if(user == null) return -1;
-		
-		List<History> hl = user.getHistory();
-		
-		History history = new History();
-		history.setId(0L);
-		history.setCourse(course);
-		history.setName(name);
-		history.setUser(user);
-		history.setCreateDate(new Date());
-		Long id = -1L;
-		for(History x:hl)
-			if(x.equals(history)) {
-				id = x.getId();
-				hl.remove(x);
-				break;
-			}
-		hl.add(history);
-		user.setHistory(hl);
-		userDao.save(user);
-		if(id>=0L) historyDao.deleteById(id);
-		return 0;
-	}
+//	public int addHistory(String token, String course, String name)
+//	{
+//		User user = userDao.readByUuid(token);
+//
+//		if(user == null) return -1;
+//
+//		List<History> hl = user.getHistory();
+//
+//		History history = new History();
+//		history.setId(0L);
+//		history.setCourse(course);
+//		history.setName(name);
+//		history.setUser(user);
+//		history.setCreateDate(new Date());
+//		Long id = -1L;
+//		for(History x:hl)
+//			if(x.equals(history)) {
+//				id = x.getId();
+//				hl.remove(x);
+//				break;
+//			}
+//		hl.add(history);
+//		user.setHistory(hl);
+//		userDao.save(user);
+//		if(id>=0L) historyDao.deleteById(id);
+//		return 0;
+//	}
 	
-	public int addStar(String token, String course, String name)
+	public int addStar(String token, String name, String type, String uri)
 	{
 		User user = userDao.readByUuid(token);
 		
@@ -81,8 +81,9 @@ public class DataServiceImpl implements DataService {
 		Set<Starred> hl = user.getStar();
 		Starred star = new Starred();
 		star.setId(0L);
-		star.setCourse(course);
 		star.setName(name);
+		star.setType(type);
+		star.setUri(uri);
 		star.setUser(user);
 		if(!hl.contains(star)) {
 			hl.add(star);
@@ -92,7 +93,7 @@ public class DataServiceImpl implements DataService {
 		else {
 			Long id = 0L;
 			for(Starred x : hl)
-				if(x.getName().equals(name) && x.getCourse().equals(course)) {
+				if(x.getUri().equals(uri)) {
 					id = x.getId();
 					break;
 				}
@@ -102,6 +103,54 @@ public class DataServiceImpl implements DataService {
 			starredDao.deleteById(id);
 		}
 		return 0;
+	}
+
+	public int haveStarred(String token, String name, String type, String uri)
+	{
+		User user = userDao.readByUuid(token);
+		if(user == null) return -1;
+		Set<Starred> hl = user.getStar();
+		Starred star = new Starred();
+		star.setId(0L);
+		star.setName(name);
+		star.setType(type);
+		star.setUri(uri);
+		star.setUser(user);
+		if(hl.contains(star)) return 1;
+		return 0;
+	}
+
+	public Long addToHistory(String token, String name, String type, String uri)
+	{
+		User user = userDao.readByUuid(token);
+		if(user == null) return -1L;
+		List<History> historyList = user.getHistory();
+		History history = new History();
+		history.setId(0L);
+		history.setName(name);
+		history.setType(type);
+		history.setUri(uri);
+		history.setTime(new Date());
+		history.setUser(user);
+		historyList.add(history);
+		user.setHistory(historyList);
+		userDao.save(user);
+		return history.getId();
+	}
+	public int deleteFromHistory(String token, Long id)
+	{
+		User user = userDao.readByUuid(token);
+		if(user == null) return -1;
+		List<History> historyList = user.getHistory();
+		for(History x : historyList)
+			if(x.getId().equals(id)) {
+				historyList.remove(x);
+				user.setHistory(historyList);
+				userDao.save(user);
+				historyDao.deleteById(id);
+				return 0;
+			}
+		return 1;
 	}
 
 	@Override

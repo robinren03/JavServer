@@ -117,11 +117,11 @@ public class RequestController {
 				JSONObject jsonObject = JSONObject.parseObject(temp);
 				if(jsonObject.getString("code").equals("0")) {
 					if(token != null) {
-						int ret = dataService.addHistory(token, course, name);
-						if(ret != 0) {
-							jsonObject.put("user-online", false);
-						}else
-							jsonObject.put("user-online", true);
+//						int ret = dataService.addHistory(token, course, name);
+//						if(ret != 0) {
+//							jsonObject.put("user-online", false);
+//						}else
+//							jsonObject.put("user-online", true);
 					}
 					return temp;
 				}
@@ -261,11 +261,11 @@ public class RequestController {
 				if(jsonObject.getString("code").equals("0")) 
 				{
 					if(token != null) {
-						int ret = dataService.addHistory(token, course, uri);
-						if(ret != 0) {
-							jsonObject.put("user-online", false);
-						}else
-							jsonObject.put("user-online", true);
+//						int ret = dataService.addToHistory(token, course, uri);
+//						if(ret != 0) {
+//							jsonObject.put("user-online", false);
+//						}else
+//							jsonObject.put("user-online", true);
 					}
 					return temp.toString();
 				}
@@ -275,22 +275,64 @@ public class RequestController {
 		return "failed";
 	}
 	
-	@RequestMapping(value = "/star", method = RequestMethod.GET)
+	@RequestMapping(value = "/star", method = RequestMethod.POST)
 	@ResponseBody
 	public String makeStarred(
 			HttpServletRequest request,
-			@RequestParam(value = "course", required = true) String course,
-			@RequestParam(value = "name", required = true) String name
+			@RequestParam(value = "name", required = true) String name,
+			@RequestParam(value = "type", required = true) String type,
+			@RequestParam(value = "uri", required = true) String uri,
+			@RequestParam(value = "token", required = true) String token
 			)
 	{
-		String token = request.getHeader("Token");
-		int ret = dataService.addStar(token, course, name);
+		int ret = dataService.addStar(token, name, type, uri);
 		if (ret == 0) return "success";
 		return "failed";
 	}
 
+	@RequestMapping(value = "/haveStarred", method = RequestMethod.POST)
+	@ResponseBody
+	public String haveStarred(
+			HttpServletRequest request,
+			@RequestParam(value = "name", required = true) String name,
+			@RequestParam(value = "type", required = true) String type,
+			@RequestParam(value = "uri", required = true) String uri,
+			@RequestParam(value = "token", required = true) String token
+	)
+	{
+		System.out.println("IN!!!");
+		int ret = dataService.haveStarred(token, name, type, uri);
+		if (ret == 1) return "true";
+		else if(ret==-1) return null;
+		return "false";
+	}
 
+	@RequestMapping(value = "/addToHistory", method = RequestMethod.POST)
+	@ResponseBody
+	public Long addToHistory(
+			HttpServletRequest request,
+			@RequestParam(value = "name", required = true) String name,
+			@RequestParam(value = "type", required = true) String type,
+			@RequestParam(value = "uri", required = true) String uri,
+			@RequestParam(value = "token", required = true) String token
+	)
+	{
+		Long id = dataService.addToHistory(token, name, type, uri);
+		return id;
+	}
 
+	@RequestMapping(value = "/deleteFromHistory", method = RequestMethod.POST)
+	@ResponseBody
+	public String deleteFromHistory(
+			HttpServletRequest request,
+			@RequestParam(value = "id", required = true) Long id,
+			@RequestParam(value = "token", required = true) String token
+	)
+	{
+		int result = dataService.deleteFromHistory(token, id);
+		if (result == -1) return "failed to delete it from history list!";
+		return "succeed to delete it from history list!";
+	}
 	
 	@RequestMapping(value="/donexercise", method = RequestMethod.POST)
 	@ResponseBody
