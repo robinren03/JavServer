@@ -113,13 +113,24 @@ public class UserController {
 
 	@RequestMapping(value = "/collection", method = RequestMethod.GET)
 	@ResponseBody
-	public Set<Starred> getCollection(
-			HttpServletRequest request,
-			@RequestParam(value = "token", required = true) String token
-	)
-	{
-		if(token == null) return null;
-		return userService.getCollection(token);
-	}
+    public Set<Starred> getCollection(
+            HttpServletRequest request,
+            @RequestParam(value = "token", required = true) String token
+    )
+    {
+        if(token == null) return null;
+        return userService.getCollection(token);
+    }
+
+    @RequestMapping(value = "/history", method = RequestMethod.GET)
+    @ResponseBody
+    public List<History> getHistory(
+            HttpServletRequest request,
+            @RequestParam(value = "token", required = true) String token
+    )
+    {
+        if(token == null) return null;
+        return userService.getHistory(token);
+    }
 
 }
