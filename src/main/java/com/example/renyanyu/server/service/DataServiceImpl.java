@@ -44,34 +44,6 @@ public class DataServiceImpl implements DataService {
 		user.setPassword("123456");
 		userDao.save(user);
 	}
-
-//	public int addHistory(String token, String course, String name)
-//	{
-//		User user = userDao.readByUuid(token);
-//
-//		if(user == null) return -1;
-//
-//		List<History> hl = user.getHistory();
-//
-//		History history = new History();
-//		history.setId(0L);
-//		history.setCourse(course);
-//		history.setName(name);
-//		history.setUser(user);
-//		history.setCreateDate(new Date());
-//		Long id = -1L;
-//		for(History x:hl)
-//			if(x.equals(history)) {
-//				id = x.getId();
-//				hl.remove(x);
-//				break;
-//			}
-//		hl.add(history);
-//		user.setHistory(hl);
-//		userDao.save(user);
-//		if(id>=0L) historyDao.deleteById(id);
-//		return 0;
-//	}
 	
 	public int addStar(String token, String name, String type, String uri)
 	{
@@ -137,6 +109,7 @@ public class DataServiceImpl implements DataService {
 		userDao.save(user);
 		return history.getId();
 	}
+	
 	public int deleteFromHistory(String token, Long id)
 	{
 		User user = userDao.readByUuid(token);

@@ -65,4 +65,9 @@ public class UserServiceImpl implements UserService {
 		return user.getHistory();
 	}
 
+	@Override
+	public User readByUuid(String uuid) {
+		return userDao.readByUuid(uuid);
+	}
+
 }

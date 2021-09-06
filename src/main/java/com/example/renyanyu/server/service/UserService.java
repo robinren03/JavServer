@@ -14,6 +14,7 @@ import java.util.Set;
 
 public interface UserService {
 	User readByName(String name);
+	User readByUuid(String uuid);
 	void updateUser(User user);
 	Page<Exercise> getExercise(String token, int page);
 	Page<Exercise> getWrongExercise(String token, int page);

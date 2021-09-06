@@ -20,6 +20,7 @@ public class Exercise implements Serializable, Comparable<Exercise> {
 	
 	private static final long serialVersionUID = 8293278516384639149L;
 	
+	@JsonIgnore
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

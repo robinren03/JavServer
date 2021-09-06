@@ -173,10 +173,8 @@ public class RequestController {
 	
 	@RequestMapping(value="/exercise", method = RequestMethod.GET)
 	@ResponseBody
-	public String getExercise(
-			HttpServletRequest request,
+	public static String getExercise(
 			@RequestParam(value = "uriName", required =true) String uriName) {
-		String token = request.getHeader("Token");
 		LinkedHashMap<String, String> request1 = new LinkedHashMap<String, String>();
 		request1.put("uriName", uriName);
 		for(int i=0; i<=2; i++) {
@@ -188,11 +186,7 @@ public class RequestController {
 			} else {
 				System.out.println(temp);
 				JSONObject jsonObject = JSONObject.parseObject(temp);
-				if(jsonObject.getString("code").equals("0")) {
-					if(token != null) {
-					}
-					return temp;
-				}
+				if(jsonObject.getString("code").equals("0")) return temp;
 				else setupId();
 			}
 		}
@@ -314,11 +308,10 @@ public class RequestController {
 			@RequestParam(value = "qBody", required = true) String qBody,
 			@RequestParam(value = "qAnswer", required = true) String qAnswer,
 			@RequestParam(value = "isWrong", required = true) boolean isWrong,
-			@RequestParam(value = "qId", required = true) int qId
+			@RequestParam(value = "qId", required = true) int qId,
+			@RequestParam(value = "token", required = true) String token
 			)
 	{
-		String token = request.getHeader("Token");
-		if(token == null) return "failed";
 		int ret = dataService.addExercise(token, uriname, qBody, qAnswer, isWrong, qId);
 		if (ret == 0) return "success";
 		return "failed";
@@ -343,7 +336,7 @@ public class RequestController {
 			List<Object> req = new ArrayList<Object>();
 			for(Object uri:ls)
 			{
-				String temp = getCard(null, course, uri.toString());
+				String temp = getCard(course, uri.toString());
 				if(!temp.equals("failed")) {
 					JSONObject jsonObject = JSONObject.parseObject(temp);
 					Map<String, Object> map = (Map<String, Object>)jsonObject.getJSONObject("data");
@@ -384,7 +377,7 @@ public class RequestController {
 			List<Object> req = new ArrayList<Object>();
 			for(Object uri:ls)
 			{
-				String temp = getCard(null, course, uri.toString());
+				String temp = getCard(course, uri.toString());
 				if(!temp.equals("failed")) {
 					JSONObject jsonObject = JSONObject.parseObject(temp);
 					Map<String, Object> map = (Map<String, Object>)jsonObject.getJSONObject("data");
