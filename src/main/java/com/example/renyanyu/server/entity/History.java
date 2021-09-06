@@ -28,9 +28,10 @@ public class History implements Serializable, Comparable<History> {
 	private Long id;
 	
 	@Column(length=50, nullable=false)
-	private String course;
+	private String type;
 	
 	private String name;
+	private String uri;
 	
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -38,7 +39,7 @@ public class History implements Serializable, Comparable<History> {
 	protected User user;
 	
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	private Date createdate;
+	private Date time;
 	
 	public Long getId() {
 		return id;
@@ -48,12 +49,12 @@ public class History implements Serializable, Comparable<History> {
 		this.id = id;
 	}
 	
-	public String getCourse() {
-		return course;
+	public String getType() {
+		return type;
 	}
 	
-	public void setCourse(String course) {
-		this.course = course;
+	public void setType(String type) {
+		this.type = type;
 	}
 	
 	public String getName() {
@@ -62,6 +63,14 @@ public class History implements Serializable, Comparable<History> {
 	
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getUri() {
+		return uri;
+	}
+
+	public void setUri(String uri) {
+		this.uri = uri;
 	}
 	
 	public User getUser() {
@@ -72,19 +81,19 @@ public class History implements Serializable, Comparable<History> {
 		this.user = user;
 	}
 	
-	public void setCreateDate(Date createdate) {
-		this.createdate = createdate;
+	public void setTime(Date time) {
+		this.time = time;
 	}
 	
-	public Date getCreateDate() {
-		return this.createdate;
+	public Date getTime() {
+		return this.time;
 	}
 	
 	public History() {
 		super();
 	}
 	
-	public History(Long id, String course, String name, User user) {
+	public History(Long id, String name, String type, String uri, User user) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -99,18 +108,20 @@ public class History implements Serializable, Comparable<History> {
 		if(obj.getClass() != this.getClass()) return false;
 		History that = (History) obj;
 		if(!that.name.equals(this.name)) return false;
-		if(!that.course.equals(this.course)) return false;
+		if(!that.type.equals(this.type)) return false;
+		if(!that.uri.equals(this.uri)) return false;
+		if(!that.time.equals(this.time)) return false;
 		if(!that.user.equals(this.user)) return false;
 		return true;
 	}
 	
 	@Override
 	public int compareTo(History o) {
-		return -(this.createdate.compareTo(o.createdate));
+		return -(this.time.compareTo(o.time));
 	}
 	
 	@Override 
 	public int hashCode() {
-		return (this.course + this.name + this.user.getId()).hashCode();
+		return (this.name + this.type + this.uri + this.time + this.user.getId()).hashCode();
 	}
 }
