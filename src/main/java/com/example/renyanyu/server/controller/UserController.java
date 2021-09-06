@@ -1,6 +1,5 @@
 package com.example.renyanyu.server.controller;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +7,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.example.renyanyu.server.dao.UserDao;
 import com.example.renyanyu.server.entity.Starred;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.renyanyu.server.entity.History;
 import com.example.renyanyu.server.entity.User;
 import com.example.renyanyu.server.entity.Exercise;
 import com.example.renyanyu.server.service.UserService;

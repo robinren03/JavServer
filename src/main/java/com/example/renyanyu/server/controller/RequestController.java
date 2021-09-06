@@ -3,15 +3,13 @@ package com.example.renyanyu.server.controller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-
-import com.example.renyanyu.server.dao.UserDao;
-import com.example.renyanyu.server.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -101,10 +99,8 @@ public class RequestController {
 	@RequestMapping(value="/instance", method = RequestMethod.GET)
 	@ResponseBody
 	public String getInstanceInfo(
-			HttpServletRequest request,
 			@RequestParam(value = "course", required = false) String course,
 			@RequestParam(value = "name", required = true) String name) {
-		String token = request.getHeader("Token");
 		LinkedHashMap<String, String> request1 = new LinkedHashMap<String, String>();
 		if(course != null) request1.put("course", course);
 		request1.put("name", name);
@@ -115,16 +111,7 @@ public class RequestController {
 				setupId();
 			} else {
 				JSONObject jsonObject = JSONObject.parseObject(temp);
-				if(jsonObject.getString("code").equals("0")) {
-					if(token != null) {
-//						int ret = dataService.addHistory(token, course, name);
-//						if(ret != 0) {
-//							jsonObject.put("user-online", false);
-//						}else
-//							jsonObject.put("user-online", true);
-					}
-					return temp;
-				}
+				if(jsonObject.getString("code").equals("0")) return temp;
 				else setupId();
 			}
 		}
@@ -241,15 +228,10 @@ public class RequestController {
 	@RequestMapping(value = "/card", method = RequestMethod.POST)
 	@ResponseBody
 	public String getCard(
-			HttpServletRequest req,
 			@RequestParam(value = "course", required = true) String course,
 			@RequestParam(value = "uri", required = true) String uri
 			)
 	{
-		String token = null;
-		if(req != null) {
-			token = req.getHeader("Token");
-		}
 		String preReq =  "uri=" + uri + "&course=" + course;
 		for(int i=0; i<=2; i++) {
 			String request = preReq + "&id=" + id;
@@ -258,17 +240,7 @@ public class RequestController {
 				setupId();
 			} else {
 				JSONObject jsonObject = JSONObject.parseObject(temp);
-				if(jsonObject.getString("code").equals("0")) 
-				{
-					if(token != null) {
-//						int ret = dataService.addToHistory(token, course, uri);
-//						if(ret != 0) {
-//							jsonObject.put("user-online", false);
-//						}else
-//							jsonObject.put("user-online", true);
-					}
-					return temp.toString();
-				}
+				if(jsonObject.getString("code").equals("0")) return temp.toString();
 				else setupId();
 			}
 		}
@@ -385,4 +357,47 @@ public class RequestController {
 			return null;
 		}	
 	}
+	
+	@RequestMapping(value = "/recommend", method = RequestMethod.GET)
+	@ResponseBody
+	public List<Object> getRecommend(
+			@RequestParam(value = "course", required = true) String course)
+	{
+		Resource resource = new ClassPathResource("./"+ course + ".csv");
+		try {
+			InputStream is = resource.getInputStream();
+			DataFrame<Object> dt = DataFrame.readCsv(is);
+			dt = dt.select(new Predicate<Object>() {
+				@Override
+				public Boolean apply(List<Object> values) {
+					return String.class.cast(values.get(1)).equals("http://www.w3.org/2000/01/rdf-schema#label");
+				}
+			});
+			int len = dt.length() / 5;
+			Calendar calendar = Calendar.getInstance();
+			int year = calendar.get(Calendar.YEAR);
+			int month = calendar.get(Calendar.MONTH);
+			int day = calendar.get(Calendar.DATE);
+			int page = (year * 10000) % len+ month * 100 + day;
+			page = page % len;
+			List<Object> ls = dt.slice(page*5, page*5 + 4).col(0);
+			List<Object> req = new ArrayList<Object>();
+			for(Object uri:ls)
+			{
+				String temp = getCard(null, course, uri.toString());
+				if(!temp.equals("failed")) {
+					JSONObject jsonObject = JSONObject.parseObject(temp);
+					Map<String, Object> map = (Map<String, Object>)jsonObject.getJSONObject("data");
+					map.put("entity_url", uri.toString());
+					req.add(map);
+				}
+			}
+			return req;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}	
+	}
+	
+	
 }
