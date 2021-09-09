@@ -172,85 +172,6 @@ public class UserController {
 				}
 			}
 		}
-//		Random random = new Random();
-//		if(historyList.size()>2)
-//		{
-//			for(int i=0,k=0;k<2&&i<(historyList.size()-2);i++)
-//			{
-//				History history = historyList.get(2+random.nextInt(historyList.size()-2));
-//				String uri=history.getUri();
-//				if(uriSet.contains(uri))
-//				{
-//					continue;
-//				}
-//				else
-//				{
-//					k++;
-//					uriSet.add(uri);
-//				}
-//				String ret = RequestController.getExercise(history.getName());
-//				if(!ret.equals("failed")) {
-//					JSONArray jsonArray = (JSONArray)(JSONObject.parseObject(ret).get("data"));
-//					for(Object jsonObject:jsonArray)
-//					{
-//						questionList.add((JSONObject) jsonObject);
-//					}
-//				}
-//			}
-//		}
-
-
-//
-//		System.out.println("IN!!!!");
-//
-//
-//		System.out.println("Here");
-//    	Set<Exercise> exercise = new HashSet<Exercise>(getWrongExercise(1, token));
-//
-//
-//    	Random random = new Random();
-//    	int his_size = his.size();
-//    	int i = random.nextInt(his_size);
-//    	int times = 0;
-//		System.out.println("doWhile");
-//		List<JSONObject> questionList=new ArrayList<>();
-//    	while(questionList.size() < 200 || times < his_size) {
-//    		History temp = his.get(i);
-//    		String name = temp.getName();
-//    		String ret = RequestController.getExercise(name);
-//    		if(!ret.equals("failed")) {
-//    			JSONArray jsonArray = (JSONArray)(JSONObject.parseObject(ret).get("data"));
-//
-//				System.out.println("All is well");
-//				List<String> ex=new ArrayList<>();
-//				for(Object jsonObject:jsonArray)
-//				{
-//					questionList.add((JSONObject) jsonObject);
-////					ex.add(jsonObject.toString());
-//				}
-//////    			List<String> ex = (List<String>) jsonArray;
-////				System.out.println("Nothing wrong");
-////    			for(String x : ex)
-////    			{
-////    				JSONObject data = JSONObject.parseObject(x);
-////    				if(data.getString("qAnswer").length() == 1) {
-////    					Exercise tempe = new Exercise();
-////    					tempe.setIsWrong(false);
-////    					tempe.setQAnswer(data.getString("qAnswer"));
-////    					tempe.setQBody(data.getString("qBody"));
-////    					tempe.setQId(Integer.valueOf(data.getString("id")).intValue());
-////    					tempe.setUriname(temp.getUri());
-////    					exercise.add(tempe);
-////    				}
-////    			}
-////				System.out.println("OK");
-//    		}
-//    		i++;
-//    		if(i==his_size) i=0;
-//    		times++;
-//    	}
-//		System.out.println("success");
-		System.out.println("success!!!!");
 		if(questionList.size()>0)
 		{
 			System.out.println(questionList);
@@ -261,4 +182,24 @@ public class UserController {
     		return null;
 		}
     }
+    
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+	@ResponseBody
+	public String updateUser(
+			@RequestParam(value = "displayname", required = false) String displayName,
+			@RequestParam(value = "password", required = false) String password,
+			@RequestParam(value = "old_password", required = true) String old_password,
+			@RequestParam(value = "token", required = true) String token) {
+		User user = userService.readByUuid(token);
+		if(user == null) { 
+			return "failed";
+		}
+		if(! user.getPassword().equals(old_password)) {
+			return "failed";
+		}
+		if(displayName != null) user.setDisplayName(displayName);
+		if(password != null) user.setPassword(password);
+		userService.updateUser(user);
+		return "success";
+	}
 }
