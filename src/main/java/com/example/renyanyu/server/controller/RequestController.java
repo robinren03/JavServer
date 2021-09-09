@@ -39,9 +39,36 @@ public class RequestController {
 			"biology", "history", "geo", "politics"
 	};
 	
+	static List<List<Object>> ls;
+	
+	private void setupList()
+	{
+		if(ls != null) return;
+		ls = new ArrayList<List<Object>>();
+		for(int i=0; i<9; i++) {
+			String course = subjects[i];
+			Resource resource = new ClassPathResource("./"+ course + ".csv");
+			try {
+				InputStream is = resource.getInputStream();
+				DataFrame<Object> dt = DataFrame.readCsv(is);
+				List<Object> temp_ls = dt.select(new Predicate<Object>() {
+					@Override
+					public Boolean apply(List<Object> values) {
+						return String.class.cast(values.get(1)).equals("http://www.w3.org/2000/01/rdf-schema#label")
+							&& String.class.cast(values.get(0)).contains("instance");				
+					}
+				}).col(0);
+				ls.add(temp_ls);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}	
+		}
+	}
 	private static void setupId()
 	{
-		String json = HttpRequest.sendPost("http://open.edukg.cn/opedukg/api/typeAuth/user/login", "phone=13321135493&password=password1");
+		//phone=15303909093&password=Edukg1234
+		//phone=13321135493&password=password1
+		String json = HttpRequest.sendPost("http://open.edukg.cn/opedukg/api/typeAuth/user/login", "phone=15303909093&password=Edukg1234");
 		if(!json.equals("failed")) {
 			JSONObject jsonObject = JSONObject.parseObject(json);
 			id = jsonObject.getString("id");
@@ -184,6 +211,7 @@ public class RequestController {
 			if(temp.equals("failed")) {
 				setupId();
 			} else {
+				System.out.println("In getExercise");
 				System.out.println(temp);
 				JSONObject jsonObject = JSONObject.parseObject(temp);
 				if(jsonObject.getString("code").equals("0")) return temp;
@@ -266,7 +294,6 @@ public class RequestController {
 			@RequestParam(value = "token", required = true) String token
 	)
 	{
-		System.out.println("IN!!!");
 		int ret = dataService.haveStarred(token, name, type, uri);
 		if (ret == 1) return "true";
 		else if(ret==-1) return null;
@@ -317,38 +344,35 @@ public class RequestController {
 		return "failed";
 	}
 	
+	private int getNum(String course)
+	{
+		for(int i = 0; i < 9; i++)
+			if(course.equals(subjects[i])) return i;
+		return -1;
+	}
+	
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	@ResponseBody
 	public List<Object> getList(
 			@RequestParam(value = "course", required = true) String course,
 			@RequestParam(value = "page", required = true)int page)
 	{
-		Resource resource = new ClassPathResource("./"+ course + ".csv");
-		try {
-			InputStream is = resource.getInputStream();
-			DataFrame<Object> dt = DataFrame.readCsv(is);
-			List<Object> ls = dt.select(new Predicate<Object>() {
-				@Override
-				public Boolean apply(List<Object> values) {
-					return String.class.cast(values.get(1)).equals("http://www.w3.org/2000/01/rdf-schema#label");
-				}
-			}).slice(page*15, page*15 + 14).col(0);
-			List<Object> req = new ArrayList<Object>();
-			for(Object uri:ls)
-			{
-				String temp = getCard(course, uri.toString());
-				if(!temp.equals("failed")) {
-					JSONObject jsonObject = JSONObject.parseObject(temp);
-					Map<String, Object> map = (Map<String, Object>)jsonObject.getJSONObject("data");
-					map.put("entity_url", uri.toString());
-					req.add(map);
-				}
+		setupList();
+		int number = getNum(course);
+		List<Object> realls = ls.get(number);
+		realls = realls.subList(page*15, page * 15 + 14);
+		List<Object> req = new ArrayList<Object>();
+		for(Object uri : realls)
+		{
+			String temp = getCard(course, uri.toString());
+			if(!temp.equals("failed")) {
+				JSONObject jsonObject = JSONObject.parseObject(temp);
+				Map<String, Object> map = (Map<String, Object>)jsonObject.getJSONObject("data");
+				map.put("entity_url", uri.toString());
+				req.add(map);
 			}
-			return req;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}	
+		}
+		return req;
 	}
 	
 	@RequestMapping(value = "/recommend", method = RequestMethod.GET)
@@ -356,40 +380,29 @@ public class RequestController {
 	public List<Object> getRecommend(
 			@RequestParam(value = "course", required = true) String course)
 	{
-		Resource resource = new ClassPathResource("./"+ course + ".csv");
-		try {
-			InputStream is = resource.getInputStream();
-			DataFrame<Object> dt = DataFrame.readCsv(is);
-			dt = dt.select(new Predicate<Object>() {
-				@Override
-				public Boolean apply(List<Object> values) {
-					return String.class.cast(values.get(1)).equals("http://www.w3.org/2000/01/rdf-schema#label");
-				}
-			});
-			int len = dt.length() / 5;
-			Calendar calendar = Calendar.getInstance();
-			int year = calendar.get(Calendar.YEAR);
-			int month = calendar.get(Calendar.MONTH);
-			int day = calendar.get(Calendar.DATE);
-			int page = (year * 10000) % len+ month * 100 + day;
-			page = page % len;
-			List<Object> ls = dt.slice(page*5, page*5 + 4).col(0);
-			List<Object> req = new ArrayList<Object>();
-			for(Object uri:ls)
-			{
-				String temp = getCard(course, uri.toString());
-				if(!temp.equals("failed")) {
-					JSONObject jsonObject = JSONObject.parseObject(temp);
-					Map<String, Object> map = (Map<String, Object>)jsonObject.getJSONObject("data");
-					map.put("entity_url", uri.toString());
-					req.add(map);
-				}
+		setupList();
+		int number = getNum(course);
+		List<Object> realls = ls.get(number);
+		int len = realls.size() / 5;
+		Calendar calendar = Calendar.getInstance();
+		int year = calendar.get(Calendar.YEAR);
+		int month = calendar.get(Calendar.MONTH);
+		int day = calendar.get(Calendar.DATE);
+		int page = (year * 10000) % len + month * 100 + day;
+		page = page % len;
+		realls = realls.subList(page*5, page*5 + 4);
+		List<Object> req = new ArrayList<Object>();
+		for(Object uri:realls)
+		{
+			String temp = getCard(course, uri.toString());
+			if(!temp.equals("failed")) {
+				JSONObject jsonObject = JSONObject.parseObject(temp);
+				Map<String, Object> map = (Map<String, Object>)jsonObject.getJSONObject("data");
+				map.put("entity_url", uri.toString());
+				req.add(map);
 			}
-			return req;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}	
+		}
+		return req;
 	}
 	
 	
