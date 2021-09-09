@@ -1,16 +1,13 @@
 package com.example.renyanyu.server.controller;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import com.example.renyanyu.server.entity.Starred;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -130,45 +127,134 @@ public class UserController {
     {
         return userService.getHistory(token);
     }
+
     @RequestMapping(value = "/quiz", method = RequestMethod.GET)
     @ResponseBody
-    public Set<Exercise> getQuiz(
+    public List<JSONObject> getQuiz(
     		@RequestParam(value = "token", required = true) String token
     )
     {
-    	User user = userService.readByUuid(token);
-    	if(user == null) return null;
-    	Set<Exercise> exercise = new HashSet<Exercise>(getWrongExercise(1, token));
-    	List<History> his = user.getHistory();
-    	Random random = new Random();
-    	int his_size = his.size();
-    	int i = random.nextInt(his_size);
-    	int times = 0;
-    	while(exercise.size() < 10 || times < his_size) {
-    		History temp = his.get(i);
-    		String name = temp.getName();
-    		String ret = RequestController.getExercise(name);
-    		if(!ret.equals("failed")) {
-    			JSONObject jsonObject = JSONObject.parseObject(ret).getJSONObject("data");
-    			List<String> ex = (List<String>) jsonObject;
-    			for(String x : ex)
-    			{
-    				JSONObject data = JSONObject.parseObject(x);
-    				if(data.getString("qAnswer").length() == 1) {
-    					Exercise tempe = new Exercise();
-    					tempe.setIsWrong(false);
-    					tempe.setQAnswer(data.getString("qAnswer"));
-    					tempe.setQBody(data.getString("qBody"));
-    					tempe.setQId(Integer.valueOf(data.getString("qId")).intValue());
-    					tempe.setUriname(temp.getUri());
-    					exercise.add(tempe);
-    				}
-    			}
-    		}
-    		i++;
-    		if(i==his_size) i=0;
-    		times++;
-    	}
-    	return exercise;
+		User user = userService.readByUuid(token);
+		if(user == null) return null;
+		List<History> historyList = user.getHistory();
+		historyList.sort(History::compareTo);
+		List<JSONObject> questionList=new ArrayList<>();
+		HashSet<String> uriSet=new HashSet<>();
+		Random random = new Random();
+		//TODO:之后继续完善：1.没有历史也能做题。2.不是简单地随机historyList.size()次，而是找找还有没有没试过的
+		//TODO:题目去重
+		int k=0,i=0;
+		while(k<2&&i<10)
+		{
+			i++;
+			History history = historyList.get(random.nextInt(historyList.size()));
+			String uri=history.getName();
+			if(uriSet.contains(uri))
+			{
+				System.out.println("while(1)");
+				continue;
+			}
+			else
+			{
+				k++;
+				uriSet.add(uri);
+			}
+			String ret = RequestController.getExercise(history.getName());
+			if(!ret.equals("failed")) {
+				JSONArray jsonArray = (JSONArray)(JSONObject.parseObject(ret).get("data"));
+				for(Object jsonObject:jsonArray)
+				{
+					questionList.add((JSONObject) jsonObject);
+				}
+			}
+		}
+//		Random random = new Random();
+//		if(historyList.size()>2)
+//		{
+//			for(int i=0,k=0;k<2&&i<(historyList.size()-2);i++)
+//			{
+//				History history = historyList.get(2+random.nextInt(historyList.size()-2));
+//				String uri=history.getUri();
+//				if(uriSet.contains(uri))
+//				{
+//					continue;
+//				}
+//				else
+//				{
+//					k++;
+//					uriSet.add(uri);
+//				}
+//				String ret = RequestController.getExercise(history.getName());
+//				if(!ret.equals("failed")) {
+//					JSONArray jsonArray = (JSONArray)(JSONObject.parseObject(ret).get("data"));
+//					for(Object jsonObject:jsonArray)
+//					{
+//						questionList.add((JSONObject) jsonObject);
+//					}
+//				}
+//			}
+//		}
+
+
+//
+//		System.out.println("IN!!!!");
+//
+//
+//		System.out.println("Here");
+//    	Set<Exercise> exercise = new HashSet<Exercise>(getWrongExercise(1, token));
+//
+//
+//    	Random random = new Random();
+//    	int his_size = his.size();
+//    	int i = random.nextInt(his_size);
+//    	int times = 0;
+//		System.out.println("doWhile");
+//		List<JSONObject> questionList=new ArrayList<>();
+//    	while(questionList.size() < 200 || times < his_size) {
+//    		History temp = his.get(i);
+//    		String name = temp.getName();
+//    		String ret = RequestController.getExercise(name);
+//    		if(!ret.equals("failed")) {
+//    			JSONArray jsonArray = (JSONArray)(JSONObject.parseObject(ret).get("data"));
+//
+//				System.out.println("All is well");
+//				List<String> ex=new ArrayList<>();
+//				for(Object jsonObject:jsonArray)
+//				{
+//					questionList.add((JSONObject) jsonObject);
+////					ex.add(jsonObject.toString());
+//				}
+//////    			List<String> ex = (List<String>) jsonArray;
+////				System.out.println("Nothing wrong");
+////    			for(String x : ex)
+////    			{
+////    				JSONObject data = JSONObject.parseObject(x);
+////    				if(data.getString("qAnswer").length() == 1) {
+////    					Exercise tempe = new Exercise();
+////    					tempe.setIsWrong(false);
+////    					tempe.setQAnswer(data.getString("qAnswer"));
+////    					tempe.setQBody(data.getString("qBody"));
+////    					tempe.setQId(Integer.valueOf(data.getString("id")).intValue());
+////    					tempe.setUriname(temp.getUri());
+////    					exercise.add(tempe);
+////    				}
+////    			}
+////				System.out.println("OK");
+//    		}
+//    		i++;
+//    		if(i==his_size) i=0;
+//    		times++;
+//    	}
+//		System.out.println("success");
+		System.out.println("success!!!!");
+		if(questionList.size()>0)
+		{
+			System.out.println(questionList);
+			return questionList;
+		}
+    	else
+    	{
+    		return null;
+		}
     }
 }

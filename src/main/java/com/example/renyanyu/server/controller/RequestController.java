@@ -41,7 +41,9 @@ public class RequestController {
 	
 	private static void setupId()
 	{
-		String json = HttpRequest.sendPost("http://open.edukg.cn/opedukg/api/typeAuth/user/login", "phone=13321135493&password=password1");
+		//phone=15303909093&password=Edukg1234
+		//phone=13321135493&password=password1
+		String json = HttpRequest.sendPost("http://open.edukg.cn/opedukg/api/typeAuth/user/login", "phone=15303909093&password=Edukg1234");
 		if(!json.equals("failed")) {
 			JSONObject jsonObject = JSONObject.parseObject(json);
 			id = jsonObject.getString("id");
@@ -184,6 +186,7 @@ public class RequestController {
 			if(temp.equals("failed")) {
 				setupId();
 			} else {
+				System.out.println("In getExercise");
 				System.out.println(temp);
 				JSONObject jsonObject = JSONObject.parseObject(temp);
 				if(jsonObject.getString("code").equals("0")) return temp;
