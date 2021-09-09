@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private ExerciseDao exerciseDao;
 	
-	private int size = 15;
+	private int size = 5;
 	
 	@Override
 	public User readByName(String name) {
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
 		User user = userDao.readByUuid(token);
 		if(user == null) return null;
 		Pageable pageable = PageRequest.of(page, size, Direction.DESC, "id");
-		return exerciseDao.findByUserAndIsWrong(user, true, pageable);
+		return exerciseDao.findByUserAndIsWrong(user, false, pageable);
 	}
 
 	@Override

@@ -45,7 +45,7 @@ public class DataServiceImpl implements DataService {
 		userDao.save(user);
 	}
 	
-	public int addStar(String token, String name, String type, String uri)
+	public int addStar(String token, String name, String type, String uri, String course)
 	{
 		User user = userDao.readByUuid(token);
 		
@@ -56,6 +56,7 @@ public class DataServiceImpl implements DataService {
 		star.setName(name);
 		star.setType(type);
 		star.setUri(uri);
+		star.setCourse(course);
 		star.setUser(user);
 		if(!hl.contains(star)) {
 			hl.add(star);
@@ -77,7 +78,7 @@ public class DataServiceImpl implements DataService {
 		return 0;
 	}
 
-	public int haveStarred(String token, String name, String type, String uri)
+	public int haveStarred(String token, String name, String type, String uri, String course)
 	{
 		User user = userDao.readByUuid(token);
 		if(user == null) return -1;
@@ -88,11 +89,12 @@ public class DataServiceImpl implements DataService {
 		star.setType(type);
 		star.setUri(uri);
 		star.setUser(user);
+		star.setCourse(course);
 		if(hl.contains(star)) return 1;
 		return 0;
 	}
 
-	public Long addToHistory(String token, String name, String type, String uri)
+	public Long addToHistory(String token, String name, String type, String uri, String course)
 	{
 		User user = userDao.readByUuid(token);
 		if(user == null) return -1L;
@@ -104,6 +106,7 @@ public class DataServiceImpl implements DataService {
 		history.setUri(uri);
 		history.setTime(new Date());
 		history.setUser(user);
+		history.setCourse(course);
 		historyList.add(history);
 		user.setHistory(historyList);
 		userDao.save(user);

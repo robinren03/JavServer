@@ -276,10 +276,11 @@ public class RequestController {
 			@RequestParam(value = "name", required = true) String name,
 			@RequestParam(value = "type", required = true) String type,
 			@RequestParam(value = "uri", required = true) String uri,
-			@RequestParam(value = "token", required = true) String token
+			@RequestParam(value = "token", required = true) String token,
+			@RequestParam(value = "course", required = true) String course
 			)
 	{
-		int ret = dataService.addStar(token, name, type, uri);
+		int ret = dataService.addStar(token, name, type, uri, course);
 		if (ret == 0) return "success";
 		return "failed";
 	}
@@ -291,10 +292,11 @@ public class RequestController {
 			@RequestParam(value = "name", required = true) String name,
 			@RequestParam(value = "type", required = true) String type,
 			@RequestParam(value = "uri", required = true) String uri,
-			@RequestParam(value = "token", required = true) String token
+			@RequestParam(value = "token", required = true) String token,
+			@RequestParam(value = "course", required = true) String course
 	)
 	{
-		int ret = dataService.haveStarred(token, name, type, uri);
+		int ret = dataService.haveStarred(token, name, type, uri, course);
 		if (ret == 1) return "true";
 		else if(ret==-1) return null;
 		return "false";
@@ -307,10 +309,11 @@ public class RequestController {
 			@RequestParam(value = "name", required = true) String name,
 			@RequestParam(value = "type", required = true) String type,
 			@RequestParam(value = "uri", required = true) String uri,
-			@RequestParam(value = "token", required = true) String token
+			@RequestParam(value = "token", required = true) String token,
+			@RequestParam(value = "course", required = true) String course
 	)
 	{
-		Long id = dataService.addToHistory(token, name, type, uri);
+		Long id = dataService.addToHistory(token, name, type, uri, course);
 		return id;
 	}
 

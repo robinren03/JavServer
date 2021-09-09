@@ -25,6 +25,7 @@ public class Starred implements Serializable, Comparable<Starred> {
 	private Long id;
 	private String uri;
 	private String type;
+	private String course;
 	
 	@Column(length=50, nullable=false)
 	private String name;
@@ -73,6 +74,14 @@ public class Starred implements Serializable, Comparable<Starred> {
 	
 	public void setUser(User user) {
 		this.user = user;
+	}
+	
+	public String getCourse() {
+		return course;
+	}
+	
+	public void setCourse(String course) {
+		this.course = course;
 	}
 	
 	public Starred() {

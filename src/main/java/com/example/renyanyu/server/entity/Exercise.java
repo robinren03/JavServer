@@ -1,6 +1,8 @@
 package com.example.renyanyu.server.entity;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,7 +22,6 @@ public class Exercise implements Serializable, Comparable<Exercise> {
 	
 	private static final long serialVersionUID = 8293278516384639149L;
 	
-	@JsonIgnore
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -133,5 +134,16 @@ public class Exercise implements Serializable, Comparable<Exercise> {
 	@Override 
 	public int hashCode() {
 		return (this.qId + "," + this.user.getId().toString()).hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("qAnswer", qAnswer);
+		map.put("qId", qId);
+		map.put("qBody", qBody);
+		map.put("uriname", uriname);
+		map.put("id", id);
+		return map.toString();
 	}
 }

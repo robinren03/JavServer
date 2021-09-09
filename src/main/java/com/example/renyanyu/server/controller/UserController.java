@@ -103,13 +103,13 @@ public class UserController {
 	
 	@RequestMapping(value = "/wrongex", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, String> getWrongExercise(
+	public Map getWrongExercise(
 			@RequestParam(value = "page", required = true) int page,
 			@RequestParam(value = "token", required = true) String token){
 		
 		Page<Exercise> el = userService.getWrongExercise(token, page);
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("content", el.getContent().toString());
+		Map map = new HashMap<>();
+		map.put("content", el.getContent());
 		map.put("pages", String.valueOf(el.getTotalPages()));
 		return map;
 	}

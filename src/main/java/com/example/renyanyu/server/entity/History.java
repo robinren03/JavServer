@@ -29,7 +29,7 @@ public class History implements Serializable, Comparable<History> {
 	
 	@Column(length=50, nullable=false)
 	private String type;
-	
+	private String course;
 	private String name;
 	private String uri;
 	
@@ -47,6 +47,14 @@ public class History implements Serializable, Comparable<History> {
 	
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public String getCourse() {
+		return course;
+	}
+	
+	public void setCourse(String course) {
+		this.course = course;
 	}
 	
 	public String getType() {
@@ -93,9 +101,11 @@ public class History implements Serializable, Comparable<History> {
 		super();
 	}
 	
-	public History(Long id, String name, String type, String uri, User user) {
+	public History(Long id, String name, String type, String uri, String course, User user) {
 		super();
 		this.id = id;
+		this.course = course;
+		this.uri = uri;
 		this.name = name;
 		this.user = user;
 	}
