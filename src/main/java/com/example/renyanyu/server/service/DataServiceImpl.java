@@ -107,9 +107,17 @@ public class DataServiceImpl implements DataService {
 		history.setTime(new Date());
 		history.setUser(user);
 		history.setCourse(course);
+		Long id = -1L;
+		for(History x:historyList)
+			if(x.getUri().equals(uri)) {
+				id = x.getId();
+				historyList.remove(x);
+				break;
+			}
 		historyList.add(history);
 		user.setHistory(historyList);
 		userDao.save(user);
+		if(id>=0L) historyDao.deleteById(id);;
 		return history.getId();
 	}
 	

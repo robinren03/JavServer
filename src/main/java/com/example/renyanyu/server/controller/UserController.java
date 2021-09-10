@@ -184,22 +184,36 @@ public class UserController {
     }
     
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-	@ResponseBody
-	public String updateUser(
-			@RequestParam(value = "displayname", required = false) String displayName,
-			@RequestParam(value = "password", required = false) String password,
-			@RequestParam(value = "old_password", required = true) String old_password,
-			@RequestParam(value = "token", required = true) String token) {
-		User user = userService.readByUuid(token);
-		if(user == null) { 
-			return "failed";
-		}
-		if(! user.getPassword().equals(old_password)) {
-			return "failed";
-		}
-		if(displayName != null) user.setDisplayName(displayName);
-		if(password != null) user.setPassword(password);
-		userService.updateUser(user);
-		return "success";
-	}
+    @ResponseBody
+    public String updateUser(
+          @RequestParam(value = "displayName", required = false) String displayName,
+          @RequestParam(value = "password", required = false) String password,
+          @RequestParam(value = "old_password", required = false) String old_password,
+          @RequestParam(value = "token", required = true) String token,
+          @RequestParam(value = "mode", required = true) String mode)
+    {
+       User user = userService.readByUuid(token);
+       if(user == null) {
+          return "invalid token";//登录过期或已在别的设备上登录
+       }
+       if(Objects.equals(mode, "modifyDisplayName"))
+       {
+          if(displayName != null) user.setDisplayName(displayName);
+          userService.updateUser(user);
+          return "successfully modified display name";
+       }
+       else if(Objects.equals(mode, "modifyPassword"))
+       {
+          if(! user.getPassword().equals(old_password)) {
+             return "wrong password";//密码与原密码不符
+          }
+          if(password != null) user.setPassword(password);
+          userService.updateUser(user);
+          return "successfully modified password";
+       }
+       else
+       {
+          return "illegal mode";
+       }
+    }
 }

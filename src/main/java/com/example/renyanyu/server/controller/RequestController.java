@@ -360,7 +360,7 @@ public class RequestController {
 			@RequestParam(value = "course", required = true) String course,
 			@RequestParam(value = "page", required = true)int page)
 	{
-		setupList();
+		setupList();	
 		int number = getNum(course);
 		List<Object> realls = ls.get(number);
 		realls = realls.subList(page*15, page * 15 + 14);
