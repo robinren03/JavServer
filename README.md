@@ -7,3 +7,7 @@
 9/4使用更新：
 
 /src/main/resources/目录下应当放置各学科数据集（即csv文件），不要嵌套在任何其他目录中！
+
+Contributed by[@robinren03](https://github.com/robinren03) ； [@fanxiaoyu0](https://github.com/fanxiaoyu0)
+
+Specially Mention [yt-liu](mailto:yt-liu19@mails.tsinghua.edu.cn)
